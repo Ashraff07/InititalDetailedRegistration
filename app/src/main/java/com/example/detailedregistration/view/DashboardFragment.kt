@@ -27,18 +27,11 @@ class DashboardFragment : Fragment() {
     private lateinit var binding: FragmentDashboardBinding
     var userList = ArrayList<Users>()
     lateinit var userRVAdapter: UsersAdapter
-
-    private lateinit var dash_username: TextView
-    private lateinit var dash_mobileNumber: TextView
-    private lateinit var dash_email: TextView
-    private lateinit var dash_logout: Button
-
     lateinit var session: RegisterPreference
     val gson = Gson()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDashboardBinding.inflate(layoutInflater)
 
@@ -50,55 +43,23 @@ class DashboardFragment : Fragment() {
         }
 
 
-//        dash_username = binding.dashUsername
-//        dash_mobileNumber = binding.dashMobilenumber
-//        dash_email = binding.dashEmail
-//        dash_logout = binding.btnLogout
 
-
-        // session.checkRegistration()
-
-        val user: HashMap<String, String> = session.getUserDetails()
-
-        val username = user.get(RegisterPreference.KEY_USERNAME)
-        val mobileNumber = user.get(RegisterPreference.KEY_MOBILE)
-        val email = user.get(RegisterPreference.KEY_EMAIL)
-        val password = user.get(RegisterPreference.KEY_PASSWORD)
-
-        val json = user.get(RegisterPreference.KEY_USERS)
-        val type: Type = object : TypeToken<ArrayList<Users>>() {}.type
-        userList = gson.fromJson<Any>(json, type) as ArrayList<Users>
-
-        val ulist2: ArrayList<Users> = userList
-
-
+        if (session.isRegistered()) {
+            val user: HashMap<String, String> = session.getUserDetails()
+            val json = user.get(RegisterPreference.KEY_USERS)
+            val type: Type = object : TypeToken<ArrayList<Users>>() {}.type
+            userList = gson.fromJson<Any>(json, type) as ArrayList<Users>
+        }
 
 
         Toast.makeText(this.requireContext(), "Retriving List Sucessful. ", Toast.LENGTH_SHORT)
             .show()
 
-
-
-
         prepareRecyclerView()
 
         userRVAdapter.setUsersList(userList)
 
-
-//        dash_username.setText(username)
-//        dash_mobileNumber.setText(mobileNumber)
-//        dash_email.setText(email)
-//
-//        dash_logout.setOnClickListener{
-//           session.logOutUser()
-//            view?.findNavController()?.navigate(R.id.action_dashboardFragment_to_registrationFragment)
-//
-//        }
-
-
         return binding.root
-
-
     }
 
 

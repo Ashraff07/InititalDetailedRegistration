@@ -29,10 +29,8 @@ class LoginFragment : Fragment() {
 
     lateinit var session: RegisterPreference
     val gson = Gson()
-
     var ulist = ArrayList<Users>()
-    var dashboardFragment = DashboardFragment()
-    val registrationFragment = RegistrationFragment()
+
 
 
     override fun onCreateView(
@@ -46,13 +44,6 @@ class LoginFragment : Fragment() {
         password = binding.logPassword
 
         session = RegisterPreference(this.requireContext())
-
-
-
-
-
-
-
 
         binding.btnRegister.setOnClickListener {
             view?.findNavController()?.navigate(R.id.action_loginFragment_to_registrationFragment)
@@ -106,7 +97,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        username.setError("user not yet registered!! please register")
+        username.setError("User not yet registered!! please register",icon)
         return false
 
     }

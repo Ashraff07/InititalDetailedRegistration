@@ -38,7 +38,7 @@ class RegistrationFragment : Fragment() {
     private lateinit var btnRegister: Button
 
     lateinit var session: RegisterPreference
-     var ulist = ArrayList<Users>()
+    var ulist = ArrayList<Users>()
     var gson = Gson()
 
 
@@ -57,21 +57,6 @@ class RegistrationFragment : Fragment() {
         btnRegister = binding.btnRegister
 
         session = RegisterPreference(this.requireContext())
-        if (ulist == null){
-            ulist = ArrayList()
-        }
-
-
-        if (session.isRegistered()) {
-//            val i: Intent =
-//                Intent(requireContext().applicationContext, DashboardFragment::class.java)
-//            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//            startActivity(i)
-            view?.findNavController()?.navigate(R.id.action_registrationFragment_to_dashboardFragment)
-           // activity?.finish()
-
-        }
-
 
         binding.btnLogin.setOnClickListener {
             view?.findNavController()?.navigate(R.id.action_registrationFragment_to_loginFragment)
@@ -80,17 +65,18 @@ class RegistrationFragment : Fragment() {
         binding.btnRegister.setOnClickListener {
 
 
-            val dash_username = username.text.toString().trim()
-            val dash_mobileNumber = mobileNumber.text.toString().trim()
-            val dash_email = email.text.toString().trim()
-            val dash_password = password.text.toString().trim()
+            val dashUsername = username.text.toString().trim()
+            val dashMobileNumber = mobileNumber.text.toString().trim()
+            val dashEmail = email.text.toString().trim()
+            val dashPassword = password.text.toString().trim()
 
-            if (dash_username.isEmpty()&& dash_mobileNumber.isEmpty()&& dash_email.isEmpty()){
-                Toast.makeText(this.requireContext(),"Registration Failed", Toast.LENGTH_LONG).show()
-            }else{
+            if (dashUsername.isEmpty() && dashMobileNumber.isEmpty() && dashEmail.isEmpty()) {
+                Toast.makeText(this.requireContext(), "Registration Failed", Toast.LENGTH_LONG)
+                    .show()
+            } else {
 
-                if(validateRegistration()){
-                    if(session.isRegistered()) {
+                if (validateRegistration()) {
+                    if (session.isRegistered()) {
 
                         val user: HashMap<String, String> = session.getUserDetails()
                         val json = user.get(RegisterPreference.KEY_USERS)
@@ -98,10 +84,9 @@ class RegistrationFragment : Fragment() {
                         ulist = gson.fromJson<Any>(json, type) as ArrayList<Users>
                     }
 
-                    ulist.add(Users(dash_username,dash_mobileNumber,dash_email,dash_password))
-                    session.createRegistrationSession(dash_username,dash_mobileNumber,dash_email,dash_password,ulist)
+                    ulist.add(Users(dashUsername, dashMobileNumber, dashEmail, dashPassword))
+                    session.createRegistrationSession(ulist)
 
-                    Toast.makeText(this.requireContext(),"Registration Succesful", Toast.LENGTH_LONG).show()
 
                     // view?.findNavController()?.navigate(R.id.action_registrationFragment_to_dashboardFragment)
 
@@ -110,15 +95,12 @@ class RegistrationFragment : Fragment() {
             }
 
 
-
-
-
         }
 
         return binding.root
     }
 
-    private fun validateRegistration():Boolean {
+    private fun validateRegistration(): Boolean {
         val icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_error)
 
         icon?.setBounds(0, 0, icon.intrinsicWidth, icon.intrinsicHeight)
@@ -146,17 +128,23 @@ class RegistrationFragment : Fragment() {
                     password.text.toString().isNotEmpty() &&
                     confirmPassword.text.toString().isNotEmpty() -> {
 
-                for( i in ulist){
-                    if(i.username.toString().equals(username.text.toString())){
-                        username.setError("UserName already exists!!",icon)
+                if (session.isRegistered()) {
+
+                    val user: HashMap<String, String> = session.getUserDetails()
+                    val json = user.get(RegisterPreference.KEY_USERS)
+                    val type: Type = object : TypeToken<ArrayList<Users>>() {}.type
+                    ulist = gson.fromJson<Any>(json, type) as ArrayList<Users>
+                }
+
+                for (i in ulist) {
+                    if (i.username.toString().equals(username.text.toString())) {
+                        username.setError("UserName already exists!!", icon)
                         return false
-                    }
-                    else if(i.mobileNumber.toString().equals(mobileNumber.text.toString())) {
+                    } else if (i.mobileNumber.toString().equals(mobileNumber.text.toString())) {
                         mobileNumber.setError("Mobile Number already exists!! try a new one", icon)
                         return false
-                    }
-                    else if(i.email.toString().equals(email.text.toString())){
-                        email.setError("Email id already exits!!",icon)
+                    } else if (i.email.toString().equals(email.text.toString())) {
+                        email.setError("Email id already exits!!", icon)
                         return false
                     }
 
@@ -170,11 +158,11 @@ class RegistrationFragment : Fragment() {
                         ) {
                             if (password.text.toString().length >= 8) {
                                 if (password.text.toString() == confirmPassword.text.toString()) {
-//                                    Toast.makeText(
-//                                        context,
-//                                        "Registration Successful!",
-//                                        Toast.LENGTH_LONG
-//                                    ).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Registration Successful!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                     return true
                                 } else {
                                     confirmPassword.setError("Oops that didn't match!!", icon)
