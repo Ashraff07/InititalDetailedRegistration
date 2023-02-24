@@ -3,13 +3,11 @@ package com.example.detailedregistration.view
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.ScrollCaptureSession
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.detailedregistration.R
@@ -17,6 +15,7 @@ import com.example.detailedregistration.RegisterPreference
 import com.example.detailedregistration.adapter.UsersAdapter
 import com.example.detailedregistration.databinding.FragmentDashboardBinding
 import com.example.detailedregistration.model.Users
+import com.example.detailedregistration.viewmodel.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -28,6 +27,7 @@ class DashboardFragment : Fragment() {
     var userList = ArrayList<Users>()
     lateinit var userRVAdapter: UsersAdapter
     lateinit var session: RegisterPreference
+    lateinit var viewModel: MainViewModel
     val gson = Gson()
 
     override fun onCreateView(
@@ -36,10 +36,13 @@ class DashboardFragment : Fragment() {
         binding = FragmentDashboardBinding.inflate(layoutInflater)
 
         session = RegisterPreference(this.requireContext())
+        viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
 
         binding.btnClear.setOnClickListener {
             session.logOutUser()
+            viewModel.clearAll()
+
         }
 
 

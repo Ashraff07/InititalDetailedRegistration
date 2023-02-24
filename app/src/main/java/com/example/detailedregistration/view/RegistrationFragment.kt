@@ -3,6 +3,7 @@ package com.example.detailedregistration.view
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import androidx.navigation.findNavController
 import com.example.detailedregistration.R
 import com.example.detailedregistration.RegisterPreference
@@ -19,6 +22,7 @@ import com.example.detailedregistration.adapter.UsersAdapter
 import com.example.detailedregistration.databinding.FragmentLoginBinding
 import com.example.detailedregistration.databinding.FragmentRegistrationBinding
 import com.example.detailedregistration.model.Users
+import com.example.detailedregistration.viewmodel.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -38,6 +42,7 @@ class RegistrationFragment : Fragment() {
     private lateinit var btnRegister: Button
 
     lateinit var session: RegisterPreference
+    lateinit var viewModel: MainViewModel
     var ulist = ArrayList<Users>()
     var gson = Gson()
 
@@ -57,6 +62,7 @@ class RegistrationFragment : Fragment() {
         btnRegister = binding.btnRegister
 
         session = RegisterPreference(this.requireContext())
+        viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
 
         binding.btnLogin.setOnClickListener {
             view?.findNavController()?.navigate(R.id.action_registrationFragment_to_loginFragment)
@@ -69,6 +75,11 @@ class RegistrationFragment : Fragment() {
             val dashMobileNumber = mobileNumber.text.toString().trim()
             val dashEmail = email.text.toString().trim()
             val dashPassword = password.text.toString().trim()
+            viewModel.userListData.observe(viewLifecycleOwner) {
+                ulist = it
+
+            }
+
 
             if (dashUsername.isEmpty() && dashMobileNumber.isEmpty() && dashEmail.isEmpty()) {
                 Toast.makeText(this.requireContext(), "Registration Failed", Toast.LENGTH_LONG)
@@ -84,10 +95,13 @@ class RegistrationFragment : Fragment() {
                         ulist = gson.fromJson<Any>(json, type) as ArrayList<Users>
                     }
 
+
+
                     ulist.add(Users(dashUsername, dashMobileNumber, dashEmail, dashPassword))
                     session.createRegistrationSession(ulist)
+                    viewModel.addUserList(dashUsername,dashMobileNumber,dashEmail,dashPassword)
 
-
+                    Log.i("UserLogin","${viewModel.userListData.value}")
                     // view?.findNavController()?.navigate(R.id.action_registrationFragment_to_dashboardFragment)
 
                 }
@@ -98,6 +112,14 @@ class RegistrationFragment : Fragment() {
         }
 
         return binding.root
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.userListData.observe(viewLifecycleOwner) {
+            ulist = it
+
+        }
     }
 
     private fun validateRegistration(): Boolean {
@@ -134,6 +156,9 @@ class RegistrationFragment : Fragment() {
                     val json = user.get(RegisterPreference.KEY_USERS)
                     val type: Type = object : TypeToken<ArrayList<Users>>() {}.type
                     ulist = gson.fromJson<Any>(json, type) as ArrayList<Users>
+//                    ulist = viewModel.userListData.value!!
+
+
                 }
 
                 for (i in ulist) {

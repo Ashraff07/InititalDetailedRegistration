@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.detailedregistration.R
 import com.example.detailedregistration.databinding.FragmentDetailedBinding
+import com.example.detailedregistration.viewmodel.MainViewModel
 
 class DetailedFragment : Fragment() {
 
@@ -15,6 +17,7 @@ class DetailedFragment : Fragment() {
     private var username: Bundle? = null
     private var mobile: Bundle? = null
     private var email:Bundle? = null
+    lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,8 @@ class DetailedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDetailedBinding.inflate(layoutInflater)
+
+
 
         binding.btnLogout.setOnClickListener {
             view?.findNavController()?.navigate(R.id.action_detailedFragment_to_loginFragment)

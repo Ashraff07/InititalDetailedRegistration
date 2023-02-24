@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import com.example.detailedregistration.model.Users
 import com.example.detailedregistration.view.RegistrationFragment
+import com.example.detailedregistration.viewmodel.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
